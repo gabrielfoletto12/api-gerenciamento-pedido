@@ -1,0 +1,878 @@
+{
+  "info": {
+    "name": "API Produtos REST - Seminário",
+    "description": "Cenários de sucesso e erro da API de produtos (Spring Boot). Use o ambiente com a variável baseUrlPedidos = http://localhost:8080. Reinicie a API antes de rodar para os dados voltarem ao estado inicial.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1 - Leitura",
+      "item": [
+        {
+          "name": "Listar todos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Resposta paginada\", function () { const j = pm.response.json(); pm.expect(j).to.have.property(\"content\"); pm.expect(j).to.have.property(\"totalPages\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos"
+              ]
+            },
+            "description": "GET lista os produtos (resposta paginada). Não altera nada no servidor."
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar id existente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos/1",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos",
+                "1"
+              ]
+            },
+            "description": "GET por id: devolve o produto 1."
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar id inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos/99",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos",
+                "99"
+              ]
+            },
+            "description": "Erro 404: o produto 99 não existe."
+          },
+          "response": []
+        },
+        {
+          "name": "Id inválido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos/abc",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos",
+                "abc"
+              ]
+            },
+            "description": "Erro 400: o id precisa ser um número."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2 - Filtros e paginação",
+      "item": [
+        {
+          "name": "Filtro por nome",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos?nome=note",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos"
+              ],
+              "query": [
+                {
+                  "key": "nome",
+                  "value": "note"
+                }
+              ]
+            },
+            "description": "Filtra produtos cujo nome contém 'note'."
+          },
+          "response": []
+        },
+        {
+          "name": "Filtro por preço",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos?precoMin=1000&precoMax=6000",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos"
+              ],
+              "query": [
+                {
+                  "key": "precoMin",
+                  "value": "1000"
+                },
+                {
+                  "key": "precoMax",
+                  "value": "6000"
+                }
+              ]
+            },
+            "description": "Filtra por faixa de preço."
+          },
+          "response": []
+        },
+        {
+          "name": "Paginação",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos?page=0&size=2",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "2"
+                }
+              ]
+            },
+            "description": "Paginação: 2 itens por página. Veja totalPages na resposta."
+          },
+          "response": []
+        },
+        {
+          "name": "Paginação inválida",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos?size=0",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos"
+              ],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "0"
+                }
+              ]
+            },
+            "description": "Erro 400: size deve estar entre 1 e 100."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3 - Criação",
+      "item": [
+        {
+          "name": "Criar válido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Header Location presente\", function () { pm.response.to.have.header(\"Location\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos"
+              ]
+            },
+            "description": "POST cria um recurso. Devolve 201 e o header Location.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nome\":\"Teclado\",\"preco\":250,\"quantidade\":15}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Criar duplicado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409\", function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos"
+              ]
+            },
+            "description": "Erro 409: já existe produto com esse nome. Mostra que o POST NÃO é idempotente.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nome\":\"Teclado\",\"preco\":250,\"quantidade\":15}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Dados inválidos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos"
+              ]
+            },
+            "description": "Erro 400: nome vazio e preço negativo (validação).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nome\":\"\",\"preco\":-5,\"quantidade\":1}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "JSON quebrado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos"
+              ]
+            },
+            "description": "Erro 400: corpo com JSON mal formatado.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nome\":\"Cabo\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4 - Atualização",
+      "item": [
+        {
+          "name": "PUT completo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos/1",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos",
+                "1"
+              ]
+            },
+            "description": "PUT substitui o produto inteiro (todos os campos).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nome\":\"Notebook Gamer\",\"preco\":6000,\"quantidade\":5}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT repetido (idempotência)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos/1",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos",
+                "1"
+              ]
+            },
+            "description": "Mesmo PUT repetido: o resultado final é o mesmo. Isso é idempotência.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nome\":\"Notebook Gamer\",\"preco\":6000,\"quantidade\":5}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos/99",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos",
+                "99"
+              ]
+            },
+            "description": "Erro 404: produto 99 não existe.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"nome\":\"Notebook Gamer\",\"preco\":6000,\"quantidade\":5}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH parcial",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Quantidade atualizada\", function () { pm.expect(pm.response.json().quantidade).to.eql(20); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos/1",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos",
+                "1"
+              ]
+            },
+            "description": "PATCH altera só os campos enviados (aqui, a quantidade).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"quantidade\":20}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH vazio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", function () { pm.response.to.have.status(400); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos/1",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos",
+                "1"
+              ]
+            },
+            "description": "Erro 400: é preciso enviar ao menos um campo.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5 - Remoção",
+      "item": [
+        {
+          "name": "Deletar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos/3",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos",
+                "3"
+              ]
+            },
+            "description": "DELETE remove o produto 3."
+          },
+          "response": []
+        },
+        {
+          "name": "Deletar de novo (idempotência)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos/3",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos",
+                "3"
+              ]
+            },
+            "description": "Repetir o DELETE mantém o mesmo estado final (idempotente)."
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar deletado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos/3",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos",
+                "3"
+              ]
+            },
+            "description": "Confirma que o produto 3 não existe mais."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6 - Erros de protocolo",
+      "item": [
+        {
+          "name": "Rota inexistente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/xyz",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "xyz"
+              ]
+            },
+            "description": "Erro 404: a rota não existe."
+          },
+          "response": []
+        },
+        {
+          "name": "Verbo não permitido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 405\", function () { pm.response.to.have.status(405); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrlPedidos}}/v1/produtos",
+              "host": [
+                "{{baseUrlPedidos}}"
+              ],
+              "path": [
+                "v1",
+                "produtos"
+              ]
+            },
+            "description": "Erro 405: DELETE não é permitido na coleção /v1/produtos."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrlPedidos",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ]
+}
